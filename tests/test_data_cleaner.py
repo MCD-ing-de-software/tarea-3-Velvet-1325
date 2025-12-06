@@ -171,6 +171,27 @@ class TestDataCleaner(unittest.TestCase):
         - Verificar que el valor extremo (120) fue eliminado del resultado (usar self.assertNotIn para verificar que 120 no está en los valores de la columna)
         - Verificar que al menos uno de los valores no extremos (25 o 35) permanece en el resultado (usar self.assertIn para verificar que está presente)
         """
+        df6 = make_sample_df()
+
+        df6 = pd.concat([
+        df6,
+        pd.DataFrame({
+            "name": ["Lupe1", "Lupe2", "Lupe3"],
+            "age": [26, 27, 28],
+            "city": ["SCL", "LPZ", "SCL"]
+            })
+        ], ignore_index=True)
+
+
+        cleaner = DataCleaner()
+
+        df_resultante = cleaner.remove_outliers_iqr(df6, col="age", factor=1.5)
+
+        # Verificar que el valor extremo fue eliminado
+        self.assertNotIn(120, df_resultante["age"].values)
+
+        # Verificar que al menos uno de los valores no extremos permanece
+        self.assertTrue(any(val in df_resultante["age"].values for val in [25, 35]))
 
     def test_remove_outliers_iqr_raises_keyerror_for_missing_column(self):
         """Test que verifica que el método remove_outliers_iqr lanza un KeyError cuando
@@ -181,6 +202,12 @@ class TestDataCleaner(unittest.TestCase):
         - Llamar a remove_outliers_iqr con una columna que no existe (ej: "salary")
         - Verificar que se lanza un KeyError (usar self.assertRaises)
         """
+        df7 = make_sample_df()
+        cleaner = DataCleaner()
+
+        with self.assertRaises(KeyError):
+            cleaner.remove_outliers_iqr(df7, col="salary", factor=1.5)
+
 
     def test_remove_outliers_iqr_raises_typeerror_for_non_numeric_column(self):
         """Test que verifica que el método remove_outliers_iqr lanza un TypeError cuando
