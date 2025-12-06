@@ -5,6 +5,7 @@ import unittest
 from src.statistics_utils import StatisticsUtils
 
 
+
 class TestStatisticsUtils(unittest.TestCase):
     """Test suite for StatisticsUtils class."""
 
@@ -56,6 +57,20 @@ class TestStatisticsUtils(unittest.TestCase):
         - Verificar que el resultado es correcto (ej: [1.5, 2.5, 3.5] para el array dado) (usar numpy.testing.assert_allclose() para comparar arrays de NumPy - esto es mejor que unittest porque maneja la comparación de arrays numéricos con tolerancia para errores de punto flotante)
         - Verificar que el resultado tiene la forma (shape) esperada (usar self.assertEqual para comparar tuplas de .shape - comparación simple, unittest es suficiente)
         """
+        # crear la lista de numeros 
+        numeros = np.array([1, 2, 3, 4])
+        # llamar a .moving_average usando StatisticsUtils
+        utils = StatisticsUtils()
+        resultado = utils.moving_average(numeros, window=2)
+        # verificar que el resultado es correcto
+        res_esperado = np.array([1.5, 2.5, 3.5])
+        # usar numpy.testing.assert_allclose() para comparar arrays de NumPy
+        npt.assert_allclose(resultado, res_esperado, rtol=1e-7, atol=1e-7)
+        # verificar que el resultado tiene la forma (shape)
+        self.assertEqual(resultado.shape, res_esperado.shape)
+
+
+
 
     def test_moving_average_raises_for_invalid_window(self):
         """Test que verifica que el método moving_average lanza un ValueError cuando
@@ -66,6 +81,16 @@ class TestStatisticsUtils(unittest.TestCase):
         - Llamar a moving_average con window=0 (valor no positivo) y verificar que se lanza un ValueError (usar self.assertRaises)
         - Llamar a moving_average con window mayor que la longitud del array y verificar que se lanza un ValueError (usar self.assertRaises)
         """
+        # crenado una lista de numeros
+        numeros2 = np.array([1, 2, 3])
+        utils = StatisticsUtils()
+        #llamar a moving_average (+), window=0
+        with self.assertRaises(ValueError):
+            utils.moving_average(numeros2, window=0)
+        # Llamar a moving_average con window > la longitud del array
+        with self.assertRaises(ValueError):
+            utils.moving_average(numeros2, window=10)
+
 
     def test_moving_average_only_accepts_1d_sequences(self):
         """Test que verifica que el método moving_average lanza un ValueError cuando
